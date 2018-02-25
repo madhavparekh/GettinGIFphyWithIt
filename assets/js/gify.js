@@ -7,7 +7,9 @@ const preSelectedTopics = [
   "Republican",
   "snow flake",
   "liberal",
-  "socialist"
+  "socialist",
+  'small hands',
+  'orange cheeto'
 ];
 
 const apiURL = 'https://api.giphy.com/v1/gifs/search?';
