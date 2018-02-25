@@ -77,12 +77,16 @@ $(document).ready(function () {
   $('#submitTpk').on('click', function () {
     // console.log($('#userTpk').val());
     var usrTpk = $('#userTpk').val().trim();
-    addBtn(usrTpk);
-    $('#userTpk').val('');
-    event.preventDefault();
-    apiTerms.q = usrTpk;
-    var queryURL = apiURL + $.param(apiTerms);
-    deployGIFs(queryURL);
+    if (usrTpk !== '') {
+      addBtn(usrTpk);
+      $('#userTpk').val('');
+      event.preventDefault();
+      apiTerms.q = usrTpk;
+      var queryURL = apiURL + $.param(apiTerms);
+      deployGIFs(queryURL);
+    }
+    else
+      alert('Field is empty. Type in topic first');
   });
 
   function addBtn(element) {
