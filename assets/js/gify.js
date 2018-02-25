@@ -10,6 +10,13 @@ const preSelectedTopics = [
   "socialist"
 ];
 
+const apiURL = 'https://api.giphy.com/v1/gifs/search?';
+const apiTerms = {
+  'q': '',
+  'api_key': 'HluJQFkkFXG927mPtPgQhmWgNyxLR5I4',
+  'limit': 20
+}
+
 $(document).ready(function () {
 
   preSelectedTopics.forEach(element => {
@@ -18,8 +25,54 @@ $(document).ready(function () {
 
   $('#disp-btn').on('click', 'button', function (r) {
     console.log(r);
-    var gifTopic = r.target.innerHTML;
-    console.log(gifTopic);
+    apiTerms.q = r.target.innerHTML.trim();
+    console.log(apiTerms.q);
+    var queryURL = apiURL + $.param(apiTerms);
+
+    $.ajax({
+      type: "GET",
+      url: queryURL,
+      data: "data",
+      success: function (r) {
+        deployGIFs(r.data);
+      }
+    });
+  });
+
+  function deployGIFs(r) {
+    $('#dispGIFs').empty();
+
+    r.forEach(e => {
+
+      var titleRating = `<h6>${e.title} - Rating - ${e.rating}</h6>`;
+
+      var div = $('<div>').html(titleRating).addClass('m-2');
+
+      var gif = $('<img>').attr('src', e.images.original_still.url)
+        .attr('data-still', e.images.original_still.url)
+        .attr('data-animate', e.images.original.url)
+        .attr('data-state', 'still').addClass('gif');
+
+      div.append(gif);
+      $('#dispGIFs').append(div);
+    });
+  }
+
+  $('body').on('click', '.gif', function (r) {
+
+    console.log(r);
+
+    var state = $(r.target).attr('data-state');
+
+    if (state === 'still') {
+      $(r.target).attr('src', $(r.target).attr('data-animate'));
+      $(r.target).attr('data-state', 'animate');
+    }
+
+    if (state === 'animate') {
+      $(r.target).attr('src', $(r.target).attr('data-still'));
+      $(r.target).attr('data-state', 'still');
+    }
 
   });
 
