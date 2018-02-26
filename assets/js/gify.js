@@ -78,13 +78,23 @@ $(document).ready(function () {
   });
 
   //get user's topic and deploy GIFs and create button for future use
-  $('#submitTpk').on('click', function () {
+  $('#submitTpk').on('click', function (event) {
+
     var usrTpk = $('#userTpk').val().trim();
 
     if (usrTpk !== '') {
       addBtn(usrTpk);
       $('#userTpk').val('');
-      event.preventDefault();
+
+      //e.cancelBubble is supported by IE - this will kill the bubbling process.
+      event.cancelBubble = true;
+      event.returnValue = false;
+      //e.stopPropagation works only in Firefox.
+      if (event.stopPropagation) {
+        event.stopPropagation();
+        event.preventDefault();
+      }
+
       apiTerms.offset = 0;
       apiTerms.q = usrTpk;
       var queryURL = apiURL + $.param(apiTerms);
@@ -93,7 +103,14 @@ $(document).ready(function () {
     }
     else {
       alert('Field is empty. Type in topic first');
-      event.preventDefault();
+      //e.cancelBubble is supported by IE - this will kill the bubbling process.
+      event.cancelBubble = true;
+      event.returnValue = false;
+      //e.stopPropagation works only in Firefox.
+      if (event.stopPropagation) {
+        event.stopPropagation();
+        event.preventDefault();
+      }
     }
   });
 
