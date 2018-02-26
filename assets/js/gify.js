@@ -1,41 +1,45 @@
-const preSelectedTopics = [
-  "donald trump",
-  "fake news",
-  "CNN",
-  "Hilary Clinton",
-  "Democrat",
-  "Republican",
-  "snow flake",
-  "liberal",
-  "socialist",
-  'small hands',
-  'orange cheeto'
-];
+var tpks = {
+  //topic : offset multipler
+  'donald trump': 0,
+  'fake news': 0,
+  'CNN': 0,
+  'Hilary Clinton': 0,
+  'Democrat': 0,
+  'Republican': 0,
+  'snow flake': 0,
+  'liberal': 0,
+  'socialist': 0,
+  'small hands': 0,
+  'orange cheeto': 0,
+};
 
 const apiURL = 'https://api.giphy.com/v1/gifs/search?';
 const apiTerms = {
-  'q': '',
+  'q': '', //search term
   'api_key': 'HluJQFkkFXG927mPtPgQhmWgNyxLR5I4',
-  'limit': 20
+  'offset': 0, //offset results to get next set 0f 10 GIFs
+  'limit': 10 //limit of 10 set per query
 }
 
 $(document).ready(function () {
 
-  preSelectedTopics.forEach(element => {
+  //create btn for each key in tpks obj
+  Object.keys(tpks).forEach(element => {
     addBtn(element);
   });
 
+  //when button clicked, create queryURL and call deployGIFs()
   $('#disp-btn').on('click', 'button', function (r) {
-    // console.log(r);
     apiTerms.q = r.target.innerHTML.trim();
-    // console.log(apiTerms.q);
+    apiTerms.offset = parseInt(tpks[apiTerms.q] * 10);
     var queryURL = apiURL + $.param(apiTerms);
-
+    tpks[apiTerms.q]++;
     deployGIFs(queryURL);
-
   });
 
+  //ajax query and on success deploy GIFs in #dispGIFs
   function deployGIFs(queryURL) {
+    console.log(tpks);
     $('#dispGIFs').empty();
 
     $.ajax({
@@ -58,6 +62,7 @@ $(document).ready(function () {
     });
   }
 
+  //pause/animate images on clicks
   $('body').on('click', '.gif', function (r) {
 
     var state = $(r.target).attr('data-state');
@@ -66,35 +71,38 @@ $(document).ready(function () {
       $(r.target).attr('src', $(r.target).attr('data-animate'));
       $(r.target).attr('data-state', 'animate');
     }
-
-    if (state === 'animate') {
+    else if (state === 'animate') {
       $(r.target).attr('src', $(r.target).attr('data-still'));
       $(r.target).attr('data-state', 'still');
     }
-
   });
 
+  //get user's topic and deploy GIFs and create button for future use
   $('#submitTpk').on('click', function () {
-    // console.log($('#userTpk').val());
     var usrTpk = $('#userTpk').val().trim();
+
     if (usrTpk !== '') {
       addBtn(usrTpk);
       $('#userTpk').val('');
       event.preventDefault();
+      apiTerms.offset = 0;
       apiTerms.q = usrTpk;
       var queryURL = apiURL + $.param(apiTerms);
       deployGIFs(queryURL);
+      tpks[usrTpk] = 1;
     }
-    else
+    else {
       alert('Field is empty. Type in topic first');
+      event.preventDefault();
+    }
   });
 
+  //add buttons in to #disp-btn for each topics
   function addBtn(element) {
     var tpkBtn = $('<button>');
     tpkBtn.addClass("btn btn-secondary btn-sm m-2")
       .attr("type", 'button');
     tpkBtn.html(element);
-    console.log(tpkBtn);
     $("#disp-btn").append(tpkBtn);
   }
 });
