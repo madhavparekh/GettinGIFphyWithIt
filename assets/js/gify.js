@@ -17,8 +17,8 @@ const apiURL = 'https://api.giphy.com/v1/gifs/search?';
 const apiTerms = {
   q: '', //search term
   api_key: 'HluJQFkkFXG927mPtPgQhmWgNyxLR5I4',
-  offset : 0,
-  limit: 10 //limit of 10 set per query
+  offset: 0,
+  limit: 10, //limit of 10 set per query
 };
 
 $(document).ready(function() {
@@ -37,9 +37,17 @@ $(document).ready(function() {
   });
 
   //ajax query and on success deploy GIFs in #dispGIFs
-  function deployGIFs(queryURL) {
+  function deployGIFs(queryURL, usrTpk) {
+    //if user submited topic
+    usrTpk = usrTpk || '';
+
+    console.log(`usrTpk - ${usrTpk}`);
     console.log(tpks);
+    console.log(queryURL);
+    //empty all divs for next set of display
     $('#dispGIFs').empty();
+    $('.prevBtn').empty();
+    $('.nextBtn').empty();
 
     $.ajax({
       type: 'GET',
@@ -47,34 +55,50 @@ $(document).ready(function() {
       data: 'data',
       success: function(r) {
         console.log(r);
-        r.data.forEach(e => {
-          var titleRating = `<h6>${e.title} - Rating - ${e.rating}</h6>`;
-          var div = $('<div>')
-            .html(titleRating)
-            .addClass('m-2');
-          var gif = $('<img>')
-            .attr('src', e.images.original_still.url)
-            .attr('data-still', e.images.original_still.url)
-            .attr('data-animate', e.images.original.url)
-            .attr('data-state', 'still')
-            .addClass('gif');
+        console.log(`length - ${r.data.length}`);
 
-          div.append(gif);
+        //if r.data has images
+        if (r.data.length > 0) {
+          //create button for user input only if there are images returned
+          if (usrTpk !== '') {
+            addBtn(usrTpk);
+          }
 
-          $('#dispGIFs').append(div);
-        });
-        //if there are more GIFs avail
-        if (r.pagination.total_count > tpks[apiTerms.q] * 10) {
-          $('.nextBtn').html(
-            `<u>${apiTerms.limit * tpks[apiTerms.q]} of ${
-              r.pagination.total_count
-            } - Next ${apiTerms.limit}</u>`
+          r.data.forEach(e => {
+            var titleRating = `<h6>${e.title} - Rating - ${e.rating}</h6>`;
+            var div = $('<div>')
+              .html(titleRating)
+              .addClass('m-2');
+            var gif = $('<img>')
+              .attr('src', e.images.original_still.url)
+              .attr('data-still', e.images.original_still.url)
+              .attr('data-animate', e.images.original.url)
+              .attr('data-state', 'still')
+              .addClass('gif');
+
+            div.append(gif);
+
+            $('#dispGIFs').append(div);
+          });
+          //if there are more GIFs avail
+          if (r.pagination.total_count > tpks[apiTerms.q] * 10) {
+            $('.nextBtn').html(
+              `<u>${apiTerms.limit * tpks[apiTerms.q]} of ${
+                r.pagination.total_count
+              } - Next ${apiTerms.limit}</u>`
+            );
+          }
+          //if on next page, display priv page
+          if (tpks[apiTerms.q] > 1) {
+            $('.prevBtn').html(`<u>Previous ${apiTerms.limit}</u>`);
+          } else
+            //or keep it empty or not show priv button
+            $('.prevBtn').empty();
+        } else {
+          alert(
+            `Search on your topic "${usrTpk}" returned no GIFs.\nTry different topic`
           );
         }
-        if (tpks[apiTerms.q] > 1) {
-          $('.prevBtn').html(`<u>Previous ${apiTerms.limit}</u>`);
-        } 
-        else $('.prevBtn').empty();
       },
     });
   }
@@ -90,7 +114,7 @@ $(document).ready(function() {
   //listen on #prevBtn to display previous set of GIFs
   $('.prevBtn').on('click', function() {
     tpks[apiTerms.q]--;
-    apiTerms.offset = parseInt((tpks[apiTerms.q] -1) * 10);
+    apiTerms.offset = parseInt((tpks[apiTerms.q] - 1) * 10);
     var queryURL = apiURL + $.param(apiTerms);
     deployGIFs(queryURL);
   });
@@ -115,35 +139,38 @@ $(document).ready(function() {
       .trim();
 
     if (usrTpk !== '') {
-      addBtn(usrTpk);
+      //put place holder back
       $('#userTpk').val('');
 
-      //e.cancelBubble is supported by IE - this will kill the bubbling process.
-      event.cancelBubble = true;
-      event.returnValue = false;
-      //e.stopPropagation works only in Firefox.
-      if (event.stopPropagation) {
-        event.stopPropagation();
-        event.preventDefault();
-      }
-
+      //setup new apiTerm obj
       apiTerms.offset = 0;
       apiTerms.q = usrTpk;
       var queryURL = apiURL + $.param(apiTerms);
-      deployGIFs(queryURL);
+      deployGIFs(queryURL, usrTpk);
+
+      //prevent event
+      eventStopper(event);
+
+      //set offset multipler
       tpks[usrTpk] = 1;
     } else {
       alert('Field is empty. Type in topic first');
-      //e.cancelBubble is supported by IE - this will kill the bubbling process.
-      event.cancelBubble = true;
-      event.returnValue = false;
-      //e.stopPropagation works only in Firefox.
-      if (event.stopPropagation) {
-        event.stopPropagation();
-        event.preventDefault();
-      }
+
+      //prevent event
+      eventStopper(event);
     }
   });
+
+  function eventStopper(event) {
+    //e.cancelBubble is supported by IE - this will kill the bubbling process.
+    event.cancelBubble = true;
+    event.returnValue = false;
+    //e.stopPropagation works only in Firefox.
+    if (event.stopPropagation) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+  }
 
   //add buttons in to #disp-btn for each topics
   function addBtn(element) {
