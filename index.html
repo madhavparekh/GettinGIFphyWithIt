@@ -10,6 +10,7 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
         crossorigin="anonymous">
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 
 <body>
@@ -22,7 +23,8 @@
     <div class="container w-90 my-3">
         <div class="container" id='disp-btn'>
             <h4 class="text-center">Click on Buttons to search GIFs or submit new topic</h4>
-            <h6 class="text-center">Next click on same topic gets you another set of GIFs</h6>
+            <h6 class="text-center">Clicking same topic gets you next set of GIFs</h6>
+            <h6 class="text-center">Click "Next" for next 10 or "Previous" for last 10 GIFs</h6>
         </div>
         <div class="container">
             <form class="form-inline my-3">
@@ -32,7 +34,15 @@
                 <button type="submit" class="btn btn-primary mx-2" id="submitTpk">Submit</button>
             </form>
         </div>
+        <div class="container pt-3 pb-5">
+            <div class="float-left prevBtn text-primary"></div>
+            <div class="float-right nextBtn text-primary"></div>
+        </div>
         <div class="container d-flex flex-wrap" id="dispGIFs"></div>
+        <div class="container pt-3 pb-5">
+            <div class="float-left prevBtn text-primary"></div>
+            <div class="float-right nextBtn text-primary"></div>
+        </div>
 
     </div>
 
