@@ -62,6 +62,9 @@ $(document).ready(function() {
           //create button for user input only if there are images returned
           if (usrTpk !== '') {
             addBtn(usrTpk);
+
+            //set offset multipler
+            tpks[usrTpk] = 1;
           }
 
           r.data.forEach(e => {
@@ -151,8 +154,6 @@ $(document).ready(function() {
       //prevent event
       eventStopper(event);
 
-      //set offset multipler
-      tpks[usrTpk] = 1;
     } else {
       alert('Field is empty. Type in topic first');
 
