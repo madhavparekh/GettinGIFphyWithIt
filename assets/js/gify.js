@@ -62,7 +62,6 @@ $(document).ready(function() {
           //create button for user input only if there are images returned
           if (usrTpk !== '') {
             addBtn(usrTpk);
-
             //set offset multipler
             tpks[usrTpk] = 1;
           }
@@ -98,8 +97,8 @@ $(document).ready(function() {
             //or keep it empty or not show priv button
             $('.prevBtn').empty();
         } else {
-          alert(
-            `Search on your topic "${usrTpk}" returned no GIFs.\nTry different topic`
+          $('#dispGIFs').html(
+            `<strong class="text-center">Search on "${usrTpk}" returned no GIFs.\nTry different topic</strong>`
           );
         }
       },
@@ -153,7 +152,6 @@ $(document).ready(function() {
 
       //prevent event
       eventStopper(event);
-
     } else {
       alert('Field is empty. Type in topic first');
 
